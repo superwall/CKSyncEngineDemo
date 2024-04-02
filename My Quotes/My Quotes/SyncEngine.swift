@@ -100,8 +100,8 @@ extension SyncEngine: CKSyncEngineDelegate {
                 return nil
             }
             
+            // It's important to update the CKRecord values here before you send them off
             matchedQuote.update(text: matchedQuote.text)
-            print("😅 sending record with text as \(matchedQuote.syncRecord?["QuoteText"] as? String ?? "N/A")")
             return matchedQuote.syncRecord
         }
         
@@ -239,27 +239,5 @@ extension SyncEngine {
         
         let quotesZoneID = CKRecordZone.ID(zoneName: Quote.zoneName)
         engine.state.add(pendingDatabaseChanges: [ .deleteZone(quotesZoneID) ])
-    }
-    
-    func pushLatestChanges() {
-        Task {
-            do {
-                print("☁️ Force pushing latest changes...")
-                try await engine.sendChanges()
-            } catch {
-                print("☁️ Error pushing latest changes: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    func pullLatestChanges() {
-        Task {
-            do {
-                print("☁️ Force pulling latest changes...")
-                try await engine.fetchChanges()
-            } catch {
-                print("☁️ Error pulilng latest changes: \(error.localizedDescription)")
-            }
-        }
     }
 }

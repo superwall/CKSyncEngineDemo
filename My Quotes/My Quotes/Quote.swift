@@ -7,7 +7,7 @@
 
 import Foundation
 import CloudKit
-// Fix edits and text not showing
+
 @Observable
 class Quote: NSObject, NSSecureCoding, Identifiable {
     static var supportsSecureCoding: Bool = true
@@ -36,8 +36,7 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
         let zoneID = CKRecordZone.ID(zoneName: Quote.zoneName)
         let recordID = CKRecord.ID(recordName: id, zoneID: zoneID)
         let record = CKRecord.init(recordType: Quote.recordType, recordID: recordID)
-        record["QuoteText"] = text as CKRecordValue
-        print("☁️ Record quote set to \(record["QuoteText"] as? String ?? "")")
+        record.encryptedValues["textQuote"] = text 
         
         self.syncRecordData = nil
         self.syncRecord = record
@@ -51,7 +50,7 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
     }
     
     init(record: CKRecord) {
-        self.text = record["QuoteText"] as? String ?? ""
+        self.text = record.encryptedValues["textQuote"] as? String ?? ""
         self.id = record.recordID.recordName
 
         syncRecord = record
@@ -69,8 +68,7 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
             fatalError("☁️ We should have a record here.")
         }
         
-        record["QuoteText"] = text
-        print("☁️ Record quote updated to \(record["QuoteText"] as? String ?? "")")
+        record.encryptedValues["textQuote"] = text
     }
     
     // MARK: NSCoding
@@ -130,7 +128,7 @@ extension Quote {
         print("☁️ Updating Quote with a record...")
         
         // Update the text
-        if let updateText = record["QuoteText"] as? String {
+        if let updateText = record.encryptedValues["textQuote"] as? String {
             print("☁️ Updating text from \(text) to \(updateText)")
             text = updateText as String
         }

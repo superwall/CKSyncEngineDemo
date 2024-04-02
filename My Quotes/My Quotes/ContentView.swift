@@ -23,6 +23,7 @@ struct ContentView: View {
                     selectedQuote = selection
                 }
             }
+            .animation(.easeInOut, value: store.quotes)
             emptyView
             Spacer()
         }
@@ -42,17 +43,6 @@ struct ContentView: View {
                     }
                 }
                 .tint(Color.red)
-                Spacer()
-                Button("Push Latest", systemImage: "icloud.and.arrow.up.fill") {
-                    Task {
-                        await store.cloudSync.pushLatestChanges()
-                    }
-                }
-                Button("Pull Latest", systemImage: "icloud.and.arrow.down.fill") {
-                    Task {
-                        await store.cloudSync.pullLatestChanges()
-                    }
-                }
              }
         }
         .sheet(item: $selectedQuote) { selection in
