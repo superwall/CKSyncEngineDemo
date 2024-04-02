@@ -47,28 +47,13 @@ class LocalStore {
             }
             .store(in: &subs)
         
-        // Easier debugging - remove everything?
-        if let value = ProcessInfo.processInfo.environment["REMOVE_ALL_DATA"],
-        value == "1" {
-            Task {
-                await cloudSync.removeAllData()
-            }
-        }
-        
         print("Store has \(self.quotes.count) quotes")
     }
     
     func save(quote: Quote) {
         // New save or edit?
-        if quote.isNewQuote {
-            let newQuote = Quote(text: quote.text)
-            self.quotes.append(newQuote)
-        } else {
-            guard let quoteIndex = quotes.firstIndex(of: quote) else {
-                return
-            }
-            
-            quotes[quoteIndex].update(text: quote.text)
+        if quotes.firstIndex(of: quote) == nil {
+            quotes.append(quote)
         }
         
         saveQuotes()

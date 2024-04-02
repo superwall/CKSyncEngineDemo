@@ -50,8 +50,15 @@ struct QuoteView: View {
     }
     
     private func save() {
-        quote.update(text: editingQuoteText)
-        store.save(quote: quote)
+        var quoteToSave: Quote = quote
+        
+        if quoteToSave.isNewQuote {
+            quoteToSave = Quote(text: editingQuoteText)
+        } else {
+            quoteToSave.update(text: editingQuoteText)
+        }
+        
+        store.save(quote: quoteToSave)
         dismiss.callAsFunction()
     }
     

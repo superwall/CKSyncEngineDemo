@@ -100,8 +100,12 @@ extension SyncEngine: CKSyncEngineDelegate {
                 return nil
             }
             
+            matchedQuote.update(text: matchedQuote.text)
+            print("😅 sending record with text as \(matchedQuote.syncRecord?["QuoteText"] as? String ?? "N/A")")
             return matchedQuote.syncRecord
         }
+        
+        print("☁️ Sending changes via nextRecordZoneChangeBatch with \(batch?.recordsToSave.count ?? 0) saves/edits and \(batch?.recordIDsToDelete.count ?? 0) removals.")
         
         return batch
     }
@@ -241,9 +245,20 @@ extension SyncEngine {
         Task {
             do {
                 print("☁️ Force pushing latest changes...")
-                try await engine.fetchChanges()
+                try await engine.sendChanges()
             } catch {
                 print("☁️ Error pushing latest changes: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func pullLatestChanges() {
+        Task {
+            do {
+                print("☁️ Force pulling latest changes...")
+                try await engine.fetchChanges()
+            } catch {
+                print("☁️ Error pulilng latest changes: \(error.localizedDescription)")
             }
         }
     }

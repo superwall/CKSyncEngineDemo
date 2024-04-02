@@ -7,7 +7,7 @@
 
 import Foundation
 import CloudKit
-
+// Fix edits and text not showing
 @Observable
 class Quote: NSObject, NSSecureCoding, Identifiable {
     static var supportsSecureCoding: Bool = true
@@ -35,8 +35,12 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
         // CloudKit
         let zoneID = CKRecordZone.ID(zoneName: Quote.zoneName)
         let recordID = CKRecord.ID(recordName: id, zoneID: zoneID)
+        let record = CKRecord.init(recordType: Quote.recordType, recordID: recordID)
+        record["QuoteText"] = text as CKRecordValue
+        print("☁️ Record quote set to \(record["QuoteText"] as? String ?? "")")
+        
         self.syncRecordData = nil
-        self.syncRecord = .init(recordType: Quote.recordType, recordID: recordID)
+        self.syncRecord = record
         self.zoneID = zoneID
         self.recordID = recordID
     }
@@ -47,7 +51,7 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
     }
     
     init(record: CKRecord) {
-        self.text = record.encryptedValues["text"] as? String ?? ""
+        self.text = record["QuoteText"] as? String ?? ""
         self.id = record.recordID.recordName
 
         syncRecord = record
@@ -60,7 +64,13 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
     
     func update(text: String) {
         self.text = text
-        self.syncRecord?.encryptedValues["text"] = text
+        
+        guard let record = syncRecord else {
+            fatalError("☁️ We should have a record here.")
+        }
+        
+        record["QuoteText"] = text
+        print("☁️ Record quote updated to \(record["QuoteText"] as? String ?? "")")
     }
     
     // MARK: NSCoding
@@ -117,10 +127,12 @@ extension Quote {
 
 extension Quote {
     func updateWith(record: CKRecord) {
+        print("☁️ Updating Quote with a record...")
+        
         // Update the text
-        if let updateText = record.encryptedValues["text"] as? String {
+        if let updateText = record["QuoteText"] as? String {
             print("☁️ Updating text from \(text) to \(updateText)")
-            text = updateText
+            text = updateText as String
         }
         
         // And save off the updated record

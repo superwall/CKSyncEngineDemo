@@ -28,19 +28,32 @@ struct ContentView: View {
         }
         .padding()
         .toolbar {
-            if !store.quotes.isEmpty {
-                ToolbarItemGroup(placement: .bottomBar) {
+            ToolbarItemGroup(placement: .bottomBar) {
+                if !store.quotes.isEmpty {
                     Button("Add", systemImage: "plus.circle.fill") {
                         selectedQuote = .empty
                     }
-                    Spacer()
-                    Button("Push Latest", systemImage: "icloud.and.arrow.up.fill") {
-                        Task {
-                            await store.cloudSync.pushLatestChanges()
-                        }
+                }
+                Spacer()
+                Button("Reset", systemImage: "exclamationmark.triangle.fill") {
+                    Task {
+                        await store.cloudSync.removeAllData()
+                        await store.cloudSync.reuploadEverything()
                     }
                 }
-            }
+                .tint(Color.red)
+                Spacer()
+                Button("Push Latest", systemImage: "icloud.and.arrow.up.fill") {
+                    Task {
+                        await store.cloudSync.pushLatestChanges()
+                    }
+                }
+                Button("Pull Latest", systemImage: "icloud.and.arrow.down.fill") {
+                    Task {
+                        await store.cloudSync.pullLatestChanges()
+                    }
+                }
+             }
         }
         .sheet(item: $selectedQuote) { selection in
             QuoteView(quote: selection)
