@@ -19,7 +19,7 @@ struct QuoteView: View {
             TextEditor(text: $editingQuoteText)
                 .focused($isFocused)
                 .font(.system(.title, design: .serif, weight: .bold))
-                .padding(.horizontal)
+                .padding()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") {
@@ -40,6 +40,9 @@ struct QuoteView: View {
                     }
                 }
         }
+        #if os(macOS)
+        .frame(minWidth: 500, minHeight: 300)
+        #endif
         .onAppear {
             editingQuoteText = quote.text
             isFocused.toggle()

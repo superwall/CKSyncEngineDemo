@@ -29,7 +29,12 @@ struct ContentView: View {
         }
         .padding()
         .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
+            #if os(macOS)
+            let placement: ToolbarItemPlacement = .automatic
+            #else
+            let placement: ToolbarItemPlacement = .bottomBar
+            #endif
+            ToolbarItemGroup(placement: placement) {
                 if !store.quotes.isEmpty {
                     Button("Add", systemImage: "plus.circle.fill") {
                         selectedQuote = .empty
