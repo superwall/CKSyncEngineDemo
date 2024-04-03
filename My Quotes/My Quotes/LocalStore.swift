@@ -17,17 +17,11 @@ class LocalStore {
     private let defaults: UserDefaults = .standard
     private var subs: [AnyCancellable] = []
     
-    // MARK: CloudKit Syncing
+    // MARK: CloudKit Sync Engine
     let cloudSync: SyncEngine = .init()
     
     init() {
         fetchQuotes()
-        
-        Task {
-            // The sync engine is lazyily initialized, so this
-            // Just fires it up. We want this done early as we can.
-            let _ = await cloudSync.engine.description
-        }
         
         // Simplified for a demo app. There is a design choice to make in how closely, or loosely, coupled
         // Your sync engine and local store are. The sync engine has to know a lot about local data. For this app
@@ -50,9 +44,19 @@ class LocalStore {
         print("Store has \(self.quotes.count) quotes")
     }
     
+    func initializeSyncEngine() async {
+        // The sync engine is lazyily initialized, so this
+        // Just fires it up. We want this done early as we can.
+        let _ = await cloudSync.engine.description
+    }
+    
     func save(quote: Quote) {
-        // New save or edit?
-        if quotes.firstIndex(of: quote) == nil {
+        if quotes.firstIndex(where: { q in
+            q.id == quote.id
+        }) == nil {
+            // New Quote, add it
+            // Otherwise, the text is already updated. Remember, Quote is
+            // A reference type.
             quotes.append(quote)
         }
         
@@ -60,7 +64,9 @@ class LocalStore {
     }
     
     func remove(quote: Quote) {
-        guard let quoteIndex = quotes.firstIndex(of: quote) else {
+        guard let quoteIndex = quotes.firstIndex(where: { q in
+            q.id == quote.id
+        }) else {
             return
         }
         
@@ -89,6 +95,10 @@ class LocalStore {
     }
 }
 
+// MARK: Simple local persistency.
+
+// You don't need to worry about this code unless
+// You're curious. It's a super simple way to serialize data.
 extension LocalStore {
     static func lastCachedQuotes() -> [Quote] {
         let defaults = UserDefaults.standard
@@ -121,6 +131,8 @@ extension LocalStore {
         }
     }
 }
+
+// MARK: Extensions for Combine
 
 extension NSNotification.Name {
     static let removePublishedQuotes: NSNotification.Name = .init(rawValue: "removePublishedQuotes")

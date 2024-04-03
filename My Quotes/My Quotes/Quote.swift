@@ -61,8 +61,10 @@ class Quote: NSObject, NSSecureCoding, Identifiable {
     
     // MARK: Updates
     
-    func update(text: String) {
+    func update(text: String, updateRecord: Bool = false) {
         self.text = text
+        
+        guard updateRecord else { return }
         
         guard let record = syncRecord else {
             fatalError("☁️ We should have a record here.")

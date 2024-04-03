@@ -101,7 +101,7 @@ extension SyncEngine: CKSyncEngineDelegate {
             }
             
             // It's important to update the CKRecord values here before you send them off
-            matchedQuote.update(text: matchedQuote.text)
+            matchedQuote.update(text: matchedQuote.text, updateRecord: true)
             return matchedQuote.syncRecord
         }
         

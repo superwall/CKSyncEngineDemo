@@ -15,6 +15,9 @@ struct My_QuotesApp: App {
         WindowGroup {
             ContentView()
                 .environment(store)
+                .task {
+                    await store.initializeSyncEngine()
+                }
         }
     }
 }

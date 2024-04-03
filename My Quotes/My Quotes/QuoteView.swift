@@ -42,10 +42,7 @@ struct QuoteView: View {
         }
         .onAppear {
             editingQuoteText = quote.text
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.33) {
-                isFocused.toggle()
-            }
+            isFocused.toggle()
         }
     }
     
