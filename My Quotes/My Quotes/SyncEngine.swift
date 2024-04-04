@@ -69,7 +69,13 @@ extension SyncEngine: CKSyncEngineDelegate {
         case .sentRecordZoneChanges(let sentRecordZoneChanges):
             print("☁️ Processing sent record zone changes.")
             processSentRecordZoneChanges(sentRecordZoneChanges)
-        case .sentDatabaseChanges, .willFetchChanges, .willFetchRecordZoneChanges, .didFetchRecordZoneChanges, .didFetchChanges, .willSendChanges, .didSendChanges:
+        case .didSendChanges,
+             .willFetchChanges,
+             .willFetchRecordZoneChanges,
+             .didFetchRecordZoneChanges,
+             .didFetchChanges,
+             .willSendChanges,
+             .sentDatabaseChanges:
             // We don't use any of these for our simple example. In the #RealWorld, you might use these to fire
             // Any local logic or data depending on the event.
             print("☁️ Purposely unhandled event came in - \(event)")
